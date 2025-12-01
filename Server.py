@@ -5,6 +5,7 @@ x = 5
 z = 104729
 
 secret = random.randint(2, z-2)
+
 public = pow(x, secret, z)
 
 server = socket.socket()
