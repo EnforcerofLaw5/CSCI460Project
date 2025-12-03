@@ -45,7 +45,6 @@ def file_writer():
 
 
 def handle_thread(conn):
-    # Each thread has its own stack but shares the heap with other threads
     try:
         secret = random.randint(2, z - 2)
         public = pow(x, secret, z)
