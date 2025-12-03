@@ -94,9 +94,12 @@ def main():
     writer.start()
 
     while True:
-        conn, addr = server.accept()
-        thread = threading.Thread(target=handle_thread, args=(conn,))
-        thread.start()
+        try:
+            conn, addr = server.accept()
+            thread = threading.Thread(target=handle_thread, args=(conn,))
+            thread.start()
+        except Exception as e:
+            print("Error: ", e)
 
 
 main()
