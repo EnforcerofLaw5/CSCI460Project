@@ -27,4 +27,4 @@ Open a separate terminal and run the client file
 ```bash
 python client.py
 ```
-Open the newly created text file server_output.txt and see results. 
+Statistics for the run will be displayed in the server terminal and a newly created txt file will show you the decrypted messages the client program sent.

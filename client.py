@@ -11,7 +11,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 x = 5
 z = 104729
 info = b"handshake"
-total_amt_threads = 2000
+total_amt_threads = 1000
 start_barrier = threading.Barrier(total_amt_threads)
 
 

@@ -14,7 +14,7 @@ info = b"handshake"
 fifo_queue = queue.Queue()
 decryption_time = []
 diffie_time = []
-total_amt_threads = 2000
+total_amt_threads = 1000
 stats_lock = threading.Lock()
 
 
