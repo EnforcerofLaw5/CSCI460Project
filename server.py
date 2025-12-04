@@ -11,7 +11,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 x = 5
 z = 104729
 info = b"handshake"
-fifo_queue = queue.Queue()
+write_queue = queue.Queue()
 decryption_time = []
 diffie_time = []
 total_amt_threads = 1000
@@ -58,11 +58,11 @@ def recv_msg(sock, n):
 
 def file_writer():
     while True:
-        message = fifo_queue.get()
+        message = write_queue.get()
 
         with open("server_output.txt", "a") as f:
             f.write(message)
-        fifo_queue.task_done()
+        write_queue.task_done()
 
 
 def handle_thread(conn):
@@ -99,7 +99,7 @@ def handle_thread(conn):
             client_id = struct.unpack(">I", plaintext[:4])[0]
             message = plaintext[4:].decode()
             formatted_message = f"{client_id}: {message}\n"
-            fifo_queue.put(formatted_message)
+            write_queue.put(formatted_message)
 
         except Exception as e:
             print("Decryption failed: ", e)
