@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 x = 5
-z = 104729
+z = 371662676846312883483907188498078214933572966194890753667383346189030426715277379776687041516615304758100835966357854128119713434016176898555346248406356694358308969747442012224913645866311419936801524325041399752525593835769048354608752886142486903454777269025620009891456271353293029278665976868347
 info = b"handshake"
 write_queue = queue.Queue()
 decryption_time = []
@@ -67,18 +67,18 @@ def file_writer():
 
 def handle_thread(conn):
     try:
-        diffie_start = time.time()
+        diffie_start = time.thread_time()
         secret = random.randint(2, z - 2)
         public = pow(x, secret, z)
         conn.send(str(public).encode())
         client_public = int(conn.recv(1024).decode())
         conn.send(b'ACK')
         shared_secret = pow(client_public, secret, z)
-        diffie_total = time.time() - diffie_start
+        diffie_total = time.thread_time() - diffie_start
         with stats_lock:
             diffie_time.append(diffie_total)
 
-        AES_start = time.time()
+        AES_start = time.thread_time()
         key = hkdf_derive_key(shared_secret)
         aesgcm = AESGCM(key)
         header = recv_msg(conn, 8)
@@ -93,7 +93,7 @@ def handle_thread(conn):
 
         try:
             plaintext = aesgcm.decrypt(nonce, ct_tag, associated_data=None)
-            AES_total = time.time() - AES_start
+            AES_total = time.thread_time() - AES_start
             with stats_lock:
                 decryption_time.append(AES_total)
             client_id = struct.unpack(">I", plaintext[:4])[0]
@@ -119,7 +119,7 @@ def main():
     writer = threading.Thread(target=file_writer, daemon=True)
     writer.start()
 
-    start_time = time.time()
+    start_time = time.process_time()
     while thread_count < total_amt_threads:
         try:
             conn, addr = server.accept()
@@ -133,7 +133,7 @@ def main():
     for t in threads:
         t.join()
 
-    end_time = time.time()
+    end_time = time.process_time()
 
     stats(end_time - start_time)
 
