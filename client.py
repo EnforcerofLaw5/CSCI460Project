@@ -11,7 +11,8 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 x = 5
 z = 104729
 info = b"handshake"
-start_barrier = threading.Barrier(1000)
+total_amt_threads = 2000
+start_barrier = threading.Barrier(total_amt_threads)
 
 
 def hkdf_derive_key(shared_int):
@@ -69,13 +70,15 @@ def run_client(thread_id):
 def main():
     threads = []
 
-    for i in range(1000):
+    for i in range(total_amt_threads):
         thread = threading.Thread(target=run_client, args=(i + 1,))
         threads.append(thread)
         thread.start()
 
     for thread in threads:
         thread.join()
+
+    print("Client threads sent")
 
 
 main()
