@@ -57,12 +57,11 @@ def recv_msg(sock, n):
 
 
 def file_writer():
-    while True:
-        message = write_queue.get()
-
-        with open("server_output.txt", "a") as f:
+    with open("server_output.txt", "a") as f:
+        while True:
+            message = write_queue.get()
             f.write(message)
-        write_queue.task_done()
+            write_queue.task_done()
 
 
 def handle_thread(conn):
@@ -115,7 +114,7 @@ def main():
     thread_count = 0
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(('localhost', 9999))
-    server.listen()
+    server.listen(total_amt_threads + 50)
     writer = threading.Thread(target=file_writer, daemon=True)
     writer.start()
 

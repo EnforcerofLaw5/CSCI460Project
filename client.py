@@ -1,6 +1,7 @@
 import socket
 import random
 import os
+import time
 import struct
 import threading
 
@@ -35,7 +36,15 @@ def run_client(thread_id):
     public = pow(x, secret, z)
 
     client = socket.socket()
-    client.connect(('localhost', 9999))
+    connected = False
+    attempts = 0
+    while not connected and attempts < 5:
+        try:
+            client.connect(('localhost', 9999))
+            connected = True
+        except ConnectionRefusedError:
+            attempts += 1
+            time.sleep(0.1)
 
     server_value = client.recv(1024).decode()
     server_value = int(server_value)
