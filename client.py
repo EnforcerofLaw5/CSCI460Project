@@ -4,13 +4,10 @@ import os
 import time
 import struct
 import threading
-
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-x = 5
-z = 371662676846312883483907188498078214933572966194890753667383346189030426715277379776687041516615304758100835966357854128119713434016176898555346248406356694358308969747442012224913645866311419936801524325041399752525593835769048354608752886142486903454777269025620009891456271353293029278665976868347
 info = b"handshake"
 total_amt_threads = 1000
 start_barrier = threading.Barrier(total_amt_threads)
@@ -32,9 +29,6 @@ def run_client(thread_id):
 
     start_barrier.wait()
 
-    secret = random.randint(2, z - 2)
-    public = pow(x, secret, z)
-
     client = socket.socket()
     connected = False
     attempts = 0
@@ -45,6 +39,16 @@ def run_client(thread_id):
         except ConnectionRefusedError:
             attempts += 1
             time.sleep(0.1)
+
+    agreed_vals = client.recv(4096).decode()
+    x_str, z_str = agreed_vals.split(',')
+    x = int(x_str)
+    z = int(z_str)
+
+    client.send(b'ACK')
+
+    secret = random.randint(2, z - 2)
+    public = pow(x, secret, z)
 
     server_value = client.recv(1024).decode()
     server_value = int(server_value)

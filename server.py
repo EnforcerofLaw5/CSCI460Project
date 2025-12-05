@@ -57,15 +57,21 @@ def recv_msg(sock, n):
 
 
 def file_writer():
+    count = 0
     with open("server_output.txt", "a") as f:
-        while True:
+        while count < total_amt_threads:
             message = write_queue.get()
             f.write(message)
             write_queue.task_done()
+            count += 1
 
 
 def handle_thread(conn):
     try:
+        agreed_vals = f"{x},{z}"
+        conn.send(agreed_vals.encode())
+        conn.recv(1024)
+
         diffie_start = time.thread_time()
         secret = random.randint(2, z - 2)
         public = pow(x, secret, z)
@@ -135,6 +141,7 @@ def main():
     end_time = time.process_time()
 
     stats(end_time - start_time)
+    writer.join()
 
 
 main()
